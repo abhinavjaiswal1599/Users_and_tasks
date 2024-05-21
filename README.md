@@ -1,7 +1,9 @@
-Hack2skill Assignment      
+**Hack2skill Assignment      
+**
 Database Schema
-User Collection
-Fields:
+**User Collection
+**
+**Fields**:
 username: String - Username of the user.
 password: String - Password of the user.
 email: String - Email of the user.
@@ -15,14 +17,14 @@ deadline: Date - Deadline for completing the subtask.
 status: String - Status of the subtask (e.g., "pending", "completed").
 deleted: Boolean - Flag indicating if the subtask has been marked for deletion.
 
-Working Prototype Repository:
+**Working Prototype Repository:**
 
 https://github.com/abhinavjaiswal1599/Users_and_tasks
 
-Code Documentation: 
-
-Controllers:
-User Controller:
+**Code Documentation: 
+**
+**Controllers:
+**User Controller:
 Responsibility: Handles user-related operations such as user creation, retrieval, updating, and deletion.
 Methods:
 createUser: Creates a new user based on the provided username, email, and password. Utilizes bcrypt to hash the password for security.
@@ -42,8 +44,8 @@ Methods:
 getSubtasks: Retrieves all non-deleted subtasks associated with a specific task.
 updateSubtasks: Updates the list of subtasks for a task, ensuring previously deleted subtasks are retained.
 createSubtask: Creates new subtasks for a task based on the provided data.
-Models:
-User Model:
+**Models:
+**User Model:
 Schema: Defines the structure of the user collection in MongoDB, including fields such as username, email, password (hashed), and an array of tasks associated with the user.
 Relationships: Each user document may contain multiple tasks, forming a one-to-many relationship.
 Task Model:
@@ -52,8 +54,8 @@ Relationships: Each task document belongs to a specific user, forming a one-to-m
 Subtask Model:
 Schema: Defines the structure of the subtask collection, including attributes such as subject, deadline, status, and a flag indicating its deletion status.
 Relationships: Each subtask document belongs to a specific task, forming a one-to-many relationship with the task collection.
-Routes:
-User Routes:
+**Routes:
+**User Routes:
 Responsible for handling HTTP requests related to user operations.
 Includes routes for user creation, retrieval, updating, and deletion.
 Task Routes:
@@ -61,8 +63,10 @@ Handles HTTP requests related to task operations, such as task creation, retriev
 Also includes routes for listing subtasks associated with tasks.
 Subtask Routes:
 Manages HTTP requests related to subtask operations, including listing, updating, and creating subtasks for tasks.
-API Documentation:
 
+
+**API Documentation:
+**
 https://documenter.getpostman.com/view/19499307/2sA3QnhZB6
 
 
