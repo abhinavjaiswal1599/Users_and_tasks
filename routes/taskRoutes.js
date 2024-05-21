@@ -3,7 +3,6 @@ const router = express.Router();
 const taskController = require('../controllers/taskController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-// Protect routes with authMiddleware
 router.use(authMiddleware);
 
 router.get('/tasks', taskController.getTasks);

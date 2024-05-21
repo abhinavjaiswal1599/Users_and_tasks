@@ -7,7 +7,6 @@ async function getToken(username, password) {
       username,
       password
     });
-    // Assuming the token is returned in the response data
     return response.data.token;
   } catch (error) {
     console.error('Authentication failed:', error.response.data);
