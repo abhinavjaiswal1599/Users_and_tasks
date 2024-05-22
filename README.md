@@ -5,8 +5,11 @@ Database Schema
 **
 **Fields**:
 username: String - Username of the user.
+
 password: String - Password of the user.
+
 email: String - Email of the user.
+
 tasks: Array - Array of tasks associated with the user.
 subject: String - Subject of the task.
 deadline: Date - Deadline for completing the task.
