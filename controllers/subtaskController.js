@@ -17,92 +17,123 @@ exports.getSubtasks = async (req, res) => {
 
     res.json({ success: true, data: task.subtasks.filter(subtask => !subtask.deleted)
     });
-} catch (err) {
-  res.status(500).json({ success: false, message: err.message });
-}
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 // Update subtasks for a task
 exports.updateSubtasks = async (req, res) => {
-    try {
-      const { taskId } = req.params;
-      const { subtasks } = req.body;
-  
+  try {
+    const { taskId } = req.params;
+    const { subtasks } = req.body;
+
       // Validate that subtasks is an array
-      if (!Array.isArray(subtasks)) {
-        return res.status(400).json({ success: false, message: 'Subtasks should be an array' });
-      }
-  
-      const user = await User.findById(req.user.id).populate('tasks');
-      if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
-      }
-  
-      const task = user.tasks.id(taskId);
-      if (!task || task.deleted) {
-        return res.status(404).json({ success: false, message: 'Task not found' });
-      }
-  
-      // Mark existing subtasks as deleted
-      task.subtasks.forEach(subtask => {
-        subtask.deleted = true;
-      });
-  
-      // Add or update subtasks
-      await Promise.all(subtasks.map(async subtaskData => {
-        const existingSubtask = task.subtasks.id(subtaskData._id);
-        if (existingSubtask) {
-          Object.assign(existingSubtask, subtaskData);
-          existingSubtask.deleted = false;
-        } else {
-          task.subtasks.push(subtaskData);
-        }
-      }));
-  
-      await user.save();
-  
-      res.json({ success: true, data: task.subtasks.filter(subtask => !subtask.deleted) });
-    } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+    if (!Array.isArray(subtasks)) {
+      return res.status(400).json({ success: false, message: 'Subtasks should be an array' });
     }
-  };
-  
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const task = user.tasks.id(taskId);
+    if (!task || task.deleted) {
+      return res.status(404).json({ success: false, message: 'Task not found' });
+    }
+
+    // Mark existing subtasks as deleted
+    task.subtasks.forEach(subtask => {
+      subtask.deleted = true;
+    });
+
+    // Add or update subtasks
+      await Promise.all(subtasks.map(async subtaskData => {
+      const existingSubtask = task.subtasks.id(subtaskData._id);
+      if (existingSubtask) {
+        Object.assign(existingSubtask, subtaskData);
+          existingSubtask.deleted = false;
+      } else {
+        task.subtasks.push(subtaskData);
+      }
+      }));
+
+    await user.save();
+
+    res.json({ success: true, data: task.subtasks.filter(subtask => !subtask.deleted) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 
 exports.createSubtask = async (req, res) => {
-    try {
-      const { taskId } = req.params;
-      const subtasksData = req.body;
-  
-      const user = await User.findById(req.user.id);
-      if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
-      }
-  
-      const task = user.tasks.id(taskId);
-      if (!task || task.deleted) {
-        return res.status(404).json({ success: false, message: 'Task not found' });
-      }
-  
-      // Ensure subtasksData is an array
-      if (!Array.isArray(subtasksData)) {
-        return res.status(400).json({ success: false, message: 'Subtasks data must be an array' });
-      }
-  
-      // Validate each subtask object in subtasksData array
-      for (const subtask of subtasksData) {
-        if (!subtask.subject || !subtask.deadline || !subtask.status) {
-          return res.status(400).json({ success: false, message: 'Each subtask must have subject, deadline, and status' });
-        }
-      }
-  
-      // Push each subtask object in subtasksData array to the task's subtasks array
-      task.subtasks.push(...subtasksData);
-      await user.save();
-  
-      res.status(201).json({ success: true, data: task.subtasks.filter(subtask => !subtask.deleted) });
-    } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
+  try {
+    const { taskId } = req.params;
+    const subtasksData = req.body;
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
-  };
-  
+
+    const task = user.tasks.id(taskId);
+      if (!task || task.deleted) {
+      return res.status(404).json({ success: false, message: 'Task not found' });
+    }
+
+      // Ensure subtasksData is an array
+    if (!Array.isArray(subtasksData)) {
+      return res.status(400).json({ success: false, message: 'Subtasks data must be an array' });
+    }
+
+      // Validate each subtask object in subtasksData array
+    for (const subtask of subtasksData) {
+      if (!subtask.subject || !subtask.deadline || !subtask.status) {
+        return res.status(400).json({ success: false, message: 'Each subtask must have subject, deadline, and status' });
+      }
+    }
+
+      // Push each subtask object in subtasksData array to the task's subtasks array
+    task.subtasks.push(...subtasksData);
+    await user.save();
+
+      res.status(201).json({ success: true, data: task.subtasks.filter(subtask => !subtask.deleted) });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+
+
+// Mark a subtask as deleted
+exports.deleteSubtask = async (req, res) => {
+  try {
+    const { taskId, subtaskId } = req.params;
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const task = user.tasks.id(taskId);
+    if (!task || task.deleted) {
+      return res.status(404).json({ success: false, message: 'Task not found' });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+    if (!subtask || subtask.deleted) {
+      return res.status(404).json({ success: false, message: 'Subtask not found' });
+    }
+
+    subtask.deleted = true;
+    await user.save();
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
   
